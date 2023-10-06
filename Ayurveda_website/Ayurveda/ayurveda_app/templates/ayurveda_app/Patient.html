@@ -1,0 +1,62 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/script.js' %}"></script>
+    <title>Patients</title>
+</head>
+<body>
+    <div class="introduction-text">
+        <h2>What is Prakriti?</h2>
+        <p>Prakriti is an Ayurvedic concept that refers to your unique physical and mental constitution. It is determined by a combination of the three doshas: Vata, Pitta, and Kapha.</p>
+        <p>Learn more about your Prakriti by using our <a href="{% url 'prakriti' %}">Know Your Prakrit</a> tool.</p>
+    </div>
+    
+    <div class="Disease-predictor">
+        <h2>Know Your Disease</h2>
+        <div class="search-box">
+            <input type="text" id="disease-input" placeholder="Enter Symptoms">
+            <button id="search-button">Search</button>
+        </div>
+        <div id="prediction-result">
+            <!-- The predicted disease will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("search-button").addEventListener("click", function () {
+            // Get the user-entered symptoms from the input field
+            var symptoms = document.getElementById("disease-input").value;
+
+            // Create a JSON object with the symptoms
+            var data = {
+                "symptoms": symptoms
+            };
+
+            // Make an HTTP POST request to the predict_disease API endpoint
+            fetch("/predict_disease/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                // Display the predicted disease to the user
+                var resultDiv = document.getElementById("prediction-result");
+                resultDiv.innerHTML = "<h3>Predicted Disease:</h3><p>" + data.predictions[0] + "</p>";
+            })
+            .catch(function (error) {
+                console.error("Error:", error);
+            });
+        });
+    </script>
+</body>
+</html>
